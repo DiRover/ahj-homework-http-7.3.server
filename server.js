@@ -30,7 +30,6 @@ app.use(async (ctx, next) => {
     const headers = { 'Access-Control-Allow-Origin': '*' };
 
     if (ctx.request.method !== 'OPTIONS') {
-        //ctx.response.body = '';
         ctx.response.set({...headers});
         try {
             return await next();
@@ -56,23 +55,15 @@ app.use(async (ctx, next) => {
 });
 
 app.use(async (ctx) => { 
-    const { method } = ctx.request.query;
     const reqType = ctx.request.method;
   
     if (reqType === 'POST') {
-      ctx.response.body = ctx.request.body;
-      console.log(ctx.request.files);
-      console.log(ctx.response.body);
-      return
-    }
-
-    /*if (reqType === 'GET') {
-      ctx.response.body = {name: 'ok'};
-      console.log(ctx.request.body);
-      console.log(ctx.response.body);
-      return
-    }*/
-
+        console.log(ctx.request.files)
+        ctx.response.body = ctx.request.body;
+        console.log(ctx.request.files);
+        console.log(ctx.response.body);
+        return
+    };
   });
   
 
