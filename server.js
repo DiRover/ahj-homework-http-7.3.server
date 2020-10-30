@@ -8,14 +8,18 @@ const uuid = require('uuid');
 const app = new Koa();
 const port = process.env.PORT || 7070;
 const public = path.join(__dirname, '/public')
+
 const arr = [];
 
 app.use(koaBody({
+    formidable:{uploadDir: public}, //директория хранения файлов
     urlencoded: true,
     multipart: true,
 }));
 
-app.use(koaStatic(public));
+app.use(koaStatic('./public'));
+
+let catalog = fs.readdirSync(public);
 
 
 //посредник обработки options запроса
@@ -55,15 +59,28 @@ app.use(async (ctx, next) => {
 });
 
 app.use(async (ctx) => { 
+    const { method } = ctx.request.query;
     const reqType = ctx.request.method;
   
     if (reqType === 'POST') {
-        console.log(ctx.request.files)
-        ctx.response.body = ctx.request.body;
-        console.log(ctx.request.files);
-        console.log(ctx.response.body);
+        
+        const { file } = ctx.request.files;
+        
+        ctx.response.body = `${file.path}`;
+        console.log(catalog);
+        fs.stat(file.path, (err, stats) => {
+            if (err) {
+              console.error(err)
+              return
+            }
+          })
         return
     };
+
+    if (reqType === 'DELETE') {
+
+    }
+
   });
   
 
