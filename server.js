@@ -35,6 +35,12 @@ app.use(async (ctx, next) => {
 
     const headers = { 'Access-Control-Allow-Origin': '*' };
 
+    if (ctx.request.method === 'OPTIONS') {
+        ctx.response.set({...headers});
+    }
+
+    
+
     if (ctx.request.method !== 'OPTIONS') {
         ctx.response.set({...headers});
         try {
@@ -46,14 +52,17 @@ app.use(async (ctx, next) => {
     };
 
     if (ctx.request.get('Access-Control-Request-Method')) {
+        console.log('tut2')
         ctx.response.set({
         ...headers,
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH',
     });
 
     if (ctx.request.get('Access-Control-Request-Headers')) {
+        console.log('tut3')
         ctx.response.set('Access-Control-Allow-Headers', ctx.request.get('Access-Control-Allow-Request-Headers'));
     };
+    console.log(ctx.response);
 
     ctx.response.status = 204; // No content
 
