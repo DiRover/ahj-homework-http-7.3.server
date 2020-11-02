@@ -1,3 +1,4 @@
+
 const http = require('http');
 const Koa = require('koa');
 const koaBody = require('koa-body');
@@ -7,20 +8,21 @@ const fs = require('fs');
 const uuid = require('uuid');
 const app = new Koa();
 const port = process.env.PORT || 7070;
-const public = path.join(__dirname, '/public')
+const public = path.join(__dirname, '/public');
 
-const arr = [];
 
 app.use(koaBody({
-    formidable:{uploadDir: public}, //директория хранения файлов
+    formidable:{uploadDir: public, //директория хранения файлов
+                keepExtensions: true //сохраняем разрешение файла
+    }, 
     urlencoded: true,
     multipart: true,
 }));
 
-app.use(koaStatic('./public'));
-
-let catalog = fs.readdirSync(public);
-
+//эта штука не работает
+app.use(koaStatic(public));
+//каталог файлов на всякий случай
+let catalog = fs.readdirSync(public); //fs.readdirSync возвращает массив имен файлов директории
 
 //посредник обработки options запроса
 app.use(async (ctx, next) => {
@@ -59,29 +61,28 @@ app.use(async (ctx, next) => {
 });
 
 app.use(async (ctx) => { 
-    const { method } = ctx.request.query;
-    const reqType = ctx.request.method;
+    const reqType = ctx.request.method; //получаем метод хапроса
+    
   
     if (reqType === 'POST') {
-        
-        const { file } = ctx.request.files;
-        
-        ctx.response.body = `${file.path}`;
-        console.log(catalog);
-        fs.stat(file.path, (err, stats) => {
-            if (err) {
-              console.error(err)
-              return
-            }
-          })
+        const { file } = ctx.request.files; //получаем сам файл
+        const notes = file.path; //получаем путь файла
+        const fileName = path.basename(notes); //получаем имя файла
+        const img = { elem: fileName };
+        ctx.response.body = img; //отправляем на фронт
         return
     };
 
-    if (reqType === 'DELETE') {
-
+    if (reqType === 'PATCH') { //метод DELETE не работает 
+        const { src } = ctx.request.body;
+        const fileName = path.basename(src); //получаем имя файла
+        console.log(fileName);
+        fs.unlink(`${public}\\${fileName}`, (err) => { //удаляем файл в директории хранения
+            if (err) throw err; //если не ок
+            console.log('file was deleted'); //если ок
+          });
     }
-
   });
-  
+
 
 const server = http.createServer(app.callback()).listen(port);
