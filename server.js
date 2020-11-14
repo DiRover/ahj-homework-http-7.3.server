@@ -21,8 +21,7 @@ app.use(koaBody({
 
 //эта штука не работает
 app.use(koaStatic(public));
-//каталог файлов на всякий случай
-let catalog = fs.readdirSync(public); //fs.readdirSync возвращает массив имен файлов директории
+
 
 //посредник обработки options запроса
 app.use(async (ctx, next) => {
@@ -35,11 +34,10 @@ app.use(async (ctx, next) => {
 
     const headers = { 'Access-Control-Allow-Origin': '*' };
 
+    //добавил чтобы сервер работал на herocu
     if (ctx.request.method === 'OPTIONS') {
         ctx.response.set({...headers});
     }
-
-    
 
     if (ctx.request.method !== 'OPTIONS') {
         ctx.response.set({...headers});
@@ -52,17 +50,14 @@ app.use(async (ctx, next) => {
     };
 
     if (ctx.request.get('Access-Control-Request-Method')) {
-        console.log('tut2')
         ctx.response.set({
         ...headers,
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH',
     });
 
     if (ctx.request.get('Access-Control-Request-Headers')) {
-        console.log('tut3')
         ctx.response.set('Access-Control-Allow-Headers', ctx.request.get('Access-Control-Allow-Request-Headers'));
     };
-    console.log(ctx.response);
 
     ctx.response.status = 204; // No content
 
@@ -71,13 +66,23 @@ app.use(async (ctx, next) => {
 
 app.use(async (ctx) => { 
     const reqType = ctx.request.method; //получаем метод хапроса
+    //каталог файлов на всякий случай
+    let catalog = fs.readdirSync(public).filter((o) => {
+        if (o !== '.gitkeep') { //убираем .gitkeep из массива
+            return o;
+        }
+    }); //fs.readdirSync возвращает массив имен файлов директории
+
+    if (reqType === 'GET') {
+        ctx.response.body = catalog; //отправляем на фронт
+    }
     
   
     if (reqType === 'POST') {
         const { file } = ctx.request.files; //получаем сам файл
         const notes = file.path; //получаем путь файла
         const fileName = path.basename(notes); //получаем имя файла
-        const img = { elem: fileName };
+        const img = { elem: fileName }; //отправляем объект для обработки json
         ctx.response.body = img; //отправляем на фронт
         return
     };
@@ -89,9 +94,13 @@ app.use(async (ctx) => {
         fs.unlink(`${public}\\${fileName}`, (err) => { //удаляем файл в директории хранения
             if (err) throw err; //если не ок
             console.log('file was deleted'); //если ок
+            console.log(catalog); //если ок
           });
     }
   });
-
-
+//требуется для обновления сервера и каталога файлов, случается баг
+/*setInterval(() => {
+    console.log('server is working');
+    console.log(catalog);
+}, 5000);*/
 const server = http.createServer(app.callback()).listen(port);
