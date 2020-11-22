@@ -90,17 +90,20 @@ app.use(async (ctx) => {
     if (reqType === 'PATCH') { //метод DELETE не работает 
         const { src } = ctx.request.body;
         const fileName = path.basename(src); //получаем имя файла
-        console.log(fileName);
-        fs.unlink(`${public}\\${fileName}`, (err) => { //удаляем файл в директории хранения
+        //console.log(fileName);
+        fs.unlinkSync(`${public}\\${fileName}`, (err) => { //удаляем файл в директории хранения
             if (err) throw err; //если не ок
             console.log('file was deleted'); //если ок
-            console.log(catalog); //если ок
-          });
+        });
+        //получаем новый список файлов в папке хранения
+        const fileList = fs.readdirSync(public).filter((o) => {
+            if (o !== '.gitkeep') { //убираем .gitkeep из массива
+                return o;
+            }
+        });
+        ctx.response.body = fileList; 
+         
     }
   });
-//требуется для обновления сервера и каталога файлов, случается баг
-/*setInterval(() => {
-    console.log('server is working');
-    console.log(catalog);
-}, 5000);*/
+
 const server = http.createServer(app.callback()).listen(port);
