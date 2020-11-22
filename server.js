@@ -101,7 +101,8 @@ app.use(async (ctx) => {
                 return o;
             }
         });
-        ctx.response.body = fileList; 
+        const str = fileList.join();
+        ctx.response.body = str; 
          
     }
   });
