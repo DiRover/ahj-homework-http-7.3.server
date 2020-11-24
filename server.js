@@ -66,6 +66,7 @@ app.use(async (ctx, next) => {
 
 app.use(async (ctx) => { 
     const reqType = ctx.request.method; //получаем метод хапроса
+    console.log(reqType)
     //каталог файлов на всякий случай
     let catalog = fs.readdirSync(public).filter((o) => {
         if (o !== '.gitkeep') { //убираем .gitkeep из массива
@@ -87,10 +88,13 @@ app.use(async (ctx) => {
         return
     };
 
-    if (reqType === 'PATCH') { //метод DELETE не работает 
-        const { src } = ctx.request.body;
-        const fileName = path.basename(src); //получаем имя файла
-        //console.log(fileName);
+    if (reqType === 'DELETE') { 
+        const { href } = ctx.request.URL;
+        /*const { src } = ctx.request.body.id;
+        const { id } = ctx.request.body;
+        console.log(src);*/
+        const fileName = path.basename(href); //получаем имя файла
+        console.log(fileName);
         fs.unlinkSync(`${public}\\${fileName}`, (err) => { //удаляем файл в директории хранения
             if (err) throw err; //если не ок
             console.log('file was deleted'); //если ок
@@ -106,5 +110,6 @@ app.use(async (ctx) => {
          
     }
   });
+
 
 const server = http.createServer(app.callback()).listen(port);
