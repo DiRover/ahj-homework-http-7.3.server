@@ -78,7 +78,7 @@ app.use(async (ctx) => {
         ctx.response.body = catalog; //отправляем на фронт
     }
     
-  
+
     if (reqType === 'POST') {
         const { file } = ctx.request.files; //получаем сам файл
         const notes = file.path; //получаем путь файла
