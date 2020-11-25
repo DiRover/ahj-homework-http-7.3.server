@@ -106,11 +106,11 @@ app.use(async (ctx) => {
             }
         });
         const str = fileList.join();
-        ctx.response.body = str; 
+        ctx.response.body = `${public}\\${fileName}`; 
          
     }
   });
 
-  
+
 
 const server = http.createServer(app.callback()).listen(port);
