@@ -95,10 +95,10 @@ app.use(async (ctx) => {
         console.log(src);*/
         const fileName = path.basename(href); //получаем имя файла
         console.log(`${public}\\${fileName}`);
-        /*fs.unlinkSync(`${public}\\${fileName}`, (err) => { //удаляем файл в директории хранения
+        fs.unlinkSync(`${public}/${fileName}`, (err) => { //удаляем файл в директории хранения
             if (err) throw err; //если не ок
             console.log('file was deleted'); //если ок
-        });*/
+        });
         //получаем новый список файлов в папке хранения
         const fileList = fs.readdirSync(public).filter((o) => {
             if (o !== '.gitkeep') { //убираем .gitkeep из массива
@@ -106,7 +106,7 @@ app.use(async (ctx) => {
             }
         });
         const str = fileList.join();
-        ctx.response.body = `${public}\\${fileName}`; 
+        ctx.response.body = `${public}/${fileName}`; 
         
     }
   });
