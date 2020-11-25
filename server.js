@@ -90,12 +90,9 @@ app.use(async (ctx) => {
 
     if (reqType === 'DELETE') { 
         const { href } = ctx.request.URL;
-        /*const { src } = ctx.request.body.id;
-        const { id } = ctx.request.body;
-        console.log(src);*/
         const fileName = path.basename(href); //получаем имя файла
-        console.log(`${public}\\${fileName}`);
-        fs.unlinkSync(`${public}/${fileName}`, (err) => { //удаляем файл в директории хранения
+        //удаляем файл в директории хранения
+        fs.unlinkSync(`${public}/${fileName}`, (err) => { //путь указан в формате для HEROKU!!!!
             if (err) throw err; //если не ок
             console.log('file was deleted'); //если ок
         });
@@ -105,12 +102,8 @@ app.use(async (ctx) => {
                 return o;
             }
         });
-        const str = fileList.join();
-        ctx.response.body = `${public}/${fileName}`; 
-        
+        ctx.response.body = `${public}/${fileName}`; //только так HEROKU видит файл!!!
     }
   });
-
-
 
 const server = http.createServer(app.callback()).listen(port);
