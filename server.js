@@ -94,7 +94,7 @@ app.use(async (ctx) => {
         const { id } = ctx.request.body;
         console.log(src);*/
         const fileName = path.basename(href); //получаем имя файла
-        console.log(fileName);
+        console.log(`${public}\\${fileName}`);
         /*fs.unlinkSync(`${public}\\${fileName}`, (err) => { //удаляем файл в директории хранения
             if (err) throw err; //если не ок
             console.log('file was deleted'); //если ок
